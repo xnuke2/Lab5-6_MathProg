@@ -226,7 +226,7 @@ namespace Lab5_6_MathProg
             else atributes += "небазисное";
             atributes += " \n";
             for (int i = 0; i < basis.Count; i++)
-                if (counts[basis[i].X, basis[i].Y] != null && counts[basis[i].X, basis[i].Y] < 0)
+                if (counts[basis[i].X, basis[i].Y] != null && counts[basis[i].X, basis[i].Y] <= 0)
                     atributes += "вырожденное";
             if(!atributes.Contains("вырожденное"))
                 atributes += "невырожденное";
