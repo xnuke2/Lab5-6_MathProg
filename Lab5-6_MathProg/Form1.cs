@@ -169,10 +169,9 @@ namespace Lab5_6_MathProg
             dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
             dataGridViewSolutions.Columns.Add("U", "u");
 
-
             //dataGridViewSolutions[0, 0].Value = "";
 
-            
+
             dataGridViewResult.Rows.Clear();
             dataGridViewResult.Columns.Clear();
             dataGridViewResult.Columns.Add("Z","Z");
@@ -244,7 +243,7 @@ namespace Lab5_6_MathProg
                                 }
 
                         for (int j = 0; j < columns.Length; j++)
-                            if (counts[i, j] != null)
+                            if (counts[i, j] != null && U[i]!=null)
                                 V[j] = costs[i, j] - U[i];
 
                     }
@@ -265,11 +264,15 @@ namespace Lab5_6_MathProg
                 
 
 
+                //вывод в таблицу
 
                 for (int i = 0; i < rows.Length + 1; i++)
                     dataGridViewSolutions.Rows.Add();
+                
+                //return;
                 for (int i = 0; i < columns.Length + 1; i++)
                     dataGridViewSolutions[i, rowIndexGlobal].Style = dataGridViewCellStyle1;
+                
                 for (int i = 0; i < rows.Length + 1; i++)
                     dataGridViewSolutions[0, rowIndexGlobal + i].Style = dataGridViewCellStyle1;
                 for (int i = 1; i < columns.Length + 1; i++)
@@ -298,7 +301,7 @@ namespace Lab5_6_MathProg
                 {
                     dataGridViewSolutions[i + 1, dataGridViewSolutions.RowCount - 1].Value = V[i];
                 }
-                rowIndexGlobal += rows.Length + 2;
+
 
                 List<Point> points = new List<Point>();
                 for (int i = 0; i < rows.Length; i++)
@@ -331,8 +334,65 @@ namespace Lab5_6_MathProg
                 values = FindWay(values, true, basiss, counts);
                 values.RemoveAt(values.Count - 1);
                 
+                //вывод построенной фигуры
 
+                for(int i=0; i<values.Count-1; i++)
+                {
+                    if (i % 2 == 0)
+                    {
+                        Point min;
+                        Point maxx;
+                        if (values[i].X == Math.Min(values[i].X, values[i + 1].X))
+                        {
+                            min = values[i];
+                            maxx = values[i + 1];
+                        }
 
+                        else
+                        {
+                            min = values[i + 1];
+                            maxx = values[i];
+                        }
+
+                        for (int j = min.X; j < maxx.X + 1; j++)
+                            dataGridViewSolutions[min.Y + 1, rowIndexGlobal + j + 1].Style.ForeColor = Color.Green;
+                    }
+                    else
+                    {
+                        Point min;
+                        Point maxx;
+                        if (values[i].Y == Math.Min(values[i].Y, values[i + 1].Y))
+                        {
+                            min = values[i];
+                            maxx = values[i + 1];
+                        }
+
+                        else
+                        {
+                            min = values[i + 1];
+                            maxx = values[i];
+                        }
+                        for (int j = min.Y; j < maxx.Y + 1; j++)
+                            dataGridViewSolutions[j + 1, rowIndexGlobal + min.X + 1].Style.ForeColor =Color.Green;
+                    }
+                }
+                Point mintmp;
+                Point maxxtmp;
+                if (values[0].Y == Math.Min(values[values.Count-1].Y, values[0].Y))
+                {
+                    mintmp = values[0];
+                    maxxtmp = values[values.Count - 1];
+                }
+
+                else
+                {
+                    mintmp = values[values.Count - 1];
+                    maxxtmp = values[0];
+                }
+
+                for (int j = mintmp.Y; j < maxxtmp.Y + 1; j++)
+                    dataGridViewSolutions[j + 1, rowIndexGlobal + mintmp.X + 1].Style.ForeColor = Color.Green;
+                
                 max = int.MaxValue;
                 for (int i = 1; i < values.Count; i++)
                     if (counts[values[i].X, values[i].Y] < max) max = (int)counts[values[i].X, values[i].Y];
@@ -345,21 +405,24 @@ namespace Lab5_6_MathProg
                         counts[values[i].X, values[i].Y] -= max;
                     if (counts[values[i].X, values[i].Y] == 0)nulls.Add(new Point(values[i].X, values[i].Y));
                 }
-                if (nulls.Count > 0)
+                //nulls.Remove(nulls.Find(p=> p.X ==basiss.X&&p.Y ==basiss.Y));
+                if (nulls.Count > 1)
                 {
                     max = costs[nulls[0].X, nulls[0].Y];
                     int indMax = 0;
                     for (int i = 1; i < nulls.Count; i++)
-                        if (costs[nulls[i].X, nulls[i].Y] > max)
+                        if (costs[nulls[i].X, nulls[i].Y] < max)
                         {
                             max = costs[nulls[i].X, nulls[i].Y];
                             indMax = i;
                         }
                     counts[nulls[indMax].X, nulls[indMax].Y] = null;
-                }
+                }else if(nulls.Count==1)
+                    counts[nulls[0].X, nulls[0].Y] = null;
+                return;
 
-
-
+                dataGridViewSolutions.Rows.Add();
+                rowIndexGlobal += rows.Length + 3;
             }
            
 
